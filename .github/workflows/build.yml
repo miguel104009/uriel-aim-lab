@@ -1,0 +1,33 @@
+name: Compilar APK Uriel Aim Lab
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ "main", "master" ]
+
+jobs:
+  construir:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Baixar codigo fonte
+        uses: actions/checkout@v4
+
+      - name: Configurar Java 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+
+      - name: Preparar executor do Gradle
+        run: |
+          gradle wrapper --gradle-version 8.7
+          chmod +x gradlew
+
+      - name: Gerar o aplicativo APK
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Disponibilizar APK para download
+        uses: actions/upload-artifact@v4
+        with:
+          name: UrielAimLab-Instalador
+          path: app/build/outputs/apk/debug/*.apk
