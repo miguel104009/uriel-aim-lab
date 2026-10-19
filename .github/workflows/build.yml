@@ -23,11 +23,22 @@ jobs:
         with:
           gradle-version: '8.10.2'
 
-      - name: Gerar o aplicativo APK
-        run: gradle assembleDebug --no-daemon
+      - name: Localizar pasta e gerar o aplicativo APK
+        run: |
+          PASTA_PROJETO=$(find . -name "settings.gradle*" -exec dirname {} \; | head -n 1)
+          if [ -n "$PASTA_PROJETO" ]; then
+            echo "Projeto encontrado na pasta: $PASTA_PROJETO"
+            cd "$PASTA_PROJETO"
+            gradle assembleDebug --no-daemon
+          else
+            echo "ERRO: Arquivo settings.gradle.kts nao foi encontrado!"
+            echo "Arquivos existentes no repositorio:"
+            find . -maxdepth 3
+            exit 1
+          fi
 
       - name: Disponibilizar APK para download
         uses: actions/upload-artifact@v4
         with:
           name: UrielAimLab-Instalador
-          path: app/build/outputs/apk/debug/*.apk
+          path: '**/build/outputs/apk/debug/*.apk'
