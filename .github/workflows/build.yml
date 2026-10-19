@@ -18,13 +18,13 @@ jobs:
           distribution: 'temurin'
           java-version: '17'
 
-      - name: Preparar executor do Gradle
-        run: |
-          gradle wrapper --gradle-version 8.7
-          chmod +x gradlew
+      - name: Instalar Gradle na nuvem
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          gradle-version: '8.7'
 
       - name: Gerar o aplicativo APK
-        run: ./gradlew assembleDebug --no-daemon
+        run: gradle assembleDebug --no-daemon
 
       - name: Disponibilizar APK para download
         uses: actions/upload-artifact@v4
